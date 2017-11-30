@@ -1,0 +1,134 @@
+Variable scope
+-------------------
+JavaScript has two scopes – global and local. 
+example
+--------
+var locales = {
+  europe: function() {          // The Europe continent's local scope
+    var myFriend = "Monique";
+
+    var france = function() {   // The France country's local scope
+      var paris = function() {  // The Paris city's local scope
+        console.log(myFriend);
+      };
+
+      paris();
+    };
+
+    france();
+  }
+};
+
+locales.europe();
+
+example 
+-------
+var test = "I'm global";
+
+function testScope() {
+  test = "I'm local";
+
+  console.log(test);     
+}
+
+console.log(test);     // output: I'm global
+
+testScope();           // output: I'm local
+
+console.log(test);     // output: I'm local (the global variable is reassigned)
+
+
+Hoisting
+---------
+A JavaScript interpreter performs many things behind the scene, and one of them is called hoisting. If you are not aware of this “hidden” behavior, it can cause a lot of confusion. The best way of thinking about the behavior of JavaScript variables is to always visualize them as consisting of two parts: a declaration and an assignment:
+var state;             // variable declaration
+state = "ready";       // variable definition (assignment)
+
+var state = "ready";   // declaration plus definition
+
+example
+-------
+console.log(state);   // output: undefined
+var state = "ready";
+
+=========>code interpretation
+As you can see when we log the value of state, the output is undefined, because we reference it before the actual assignment. You may have expected a """ReferenceError""" to be thrown because state is not declared yet. But what you don’t know is that the variable is declared behind the scene. Here is how the code is interpreted by a JavaScript engine:
+
+var state;           // moved to the top
+console.log(state);   
+state = "ready";     // left in place
+
+
+function
+=========
+Hoisting also affects function declarations. But before we see some examples, let’s first learn the difference between function declaration and function expression.
+
+function showState() {}          // function declaration
+var showState = function() {};   // function expression
+
+The easiest way to distinguish a function declaration from a function expression is to check the position of the word function in the statement. If function is the very first thing in the statement, then it’s a function declaration. Otherwise, it’s a function expression.
+
+Function declarations are hoisted completely. This means that the entire function’s body is moved to the top. This allows you to call a function before it has been declared:
+example
+-------
+showState();            // output: Ready
+
+function showState() {
+  console.log("Ready");
+} 
+
+var showState = function() {
+  console.log("Idle");
+};
+
+
+The reason the preceding code works is that JavaScript engine moves the declaration of showState() function, and all its content, to the beginning of the scope. The code is """interpreted""" like this:
+function showState() {     // moved to the top (function declaration)
+  console.log("Ready");
+} 
+
+var showState;            // moved to the top (variable declaration)
+
+showState();  
+
+showState = function() {   // left in place (variable assignment)
+  console.log("Idle");
+};
+
+
+function declaration takes precedence over the variable declaration
+-------------------------------------------------------------------
+example
+--------
+var showState = function() {
+  console.log("Idle");
+};
+
+function showState() {
+  console.log("Ready");
+} 
+
+showState();            // output: Idle
+
+Things to Remember
+------------------
+All declarations, both functions and variables, are hoisted to the top of the containing scope, before any part of your code is executed.
+Functions are hoisted first, and then variables.
+Function declarations have priority over variable declarations, but not over variable assignments.
+
+Function Hoisting
+foo();
+
+1)
+function foo() {
+  alert("Hello!");
+}--------------------------write because of function hoisting
+
+2)
+functions that are assigned to variables are not hoisted. 
+bar();
+
+var bar = function() {
+  alert("Hello!");
+};
+----------------------------no hoisting for function expression
